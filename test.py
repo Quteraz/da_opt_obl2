@@ -25,7 +25,7 @@ print('-------------------------------------------------------------------------
 data_set = 'test'
 data = data_file[data_set]
 
-test = op.one_point(data, 3)
+test = op.one_point(data, 3, 4)
 
 print('Random')
 
