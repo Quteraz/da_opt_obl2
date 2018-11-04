@@ -1,40 +1,60 @@
 import find_opt_solution as op
 import csv
 import sys
+import matplotlib.pyplot as plt
 
 print('\nReading files')
-with open('datasets/data_50', 'r') as csvfile:
-	reader = csv.reader(csvfile)
-	data_file = {'test':list(reader)}
-with open('datasets/data_100', 'r') as csvfile:
-	reader = csv.reader(csvfile)
-	data_file['small'] = list(reader)
-with open('datasets/data_1000', 'r') as csvfile:
-	reader = csv.reader(csvfile)
-	data_file['medium'] = list(reader)
-# with open('datasets/data_5000', 'r') as csvfile:
-# 	reader = csv.reader(csvfile)
-# 	data_file['large'] = list(reader)
-print('Done\n-------------------------------------------------------------------------------------')
-
-print('\nTesting')
-print('-------------------------------------------------------------------------------------')
 
 # specify what data is being used
 data_set = str(sys.argv[1])
-# data_set = 'small'
-data = data_file[data_set]
+
+if data_set == 'test':
+	with open('datasets/data_50', 'r') as csvfile:
+		reader = csv.reader(csvfile)
+		data= list(reader)
+elif data_set == 'small':
+	with open('datasets/data_100', 'r') as csvfile:
+		reader = csv.reader(csvfile)
+		data = list(reader)
+elif data_set == 'medium':
+	with open('datasets/data_1000', 'r') as csvfile:
+		reader = csv.reader(csvfile)
+		data = list(reader)
+elif data_set == 'large':
+	with open('datasets/data_50000', 'r') as csvfile:
+		reader = csv.reader(csvfile)
+		data = list(reader)
+else:
+	print('error: no dataset with matching values. exiting')
+	quit()
+
+
+print('Done\n-------------------------------------------------------------------------------------')
+
+print('\nOptimizing Coloring Solution')
+print('-------------------------------------------------------------------------------------')
 
 # test = op.gen_path(data)
 # print(test)
 
-one_point = op.one_point(data, 1000, 100)
-two_point = op.two_point(data, 1000, 100)
-
 print('One Point')
+
+one_point, one_plt = op.one_point(data, 100, 50)
 print('Fitness in',data_set,':',one_point[0])
 
 print('-------------------------------------------------------------------------------------')
 print('Two Point')
+
+two_point, two_plt = op.two_point(data, 100, 50)
 print('Fitness in',data_set,':',two_point[0])
+
 print('-------------------------------------------------------------------------------------\n')
+# plt.subplot(111)
+plt.title('Graph Coloring Problem')
+plt.xlabel('Generations')
+plt.ylabel('Fitness')
+plt.plot(one_plt)
+plt.plot(two_plt, 'r')
+plt.tight_layout()
+plt.savefig('datasets/plotting.png')
+plt.show()

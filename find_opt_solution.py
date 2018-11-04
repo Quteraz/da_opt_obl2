@@ -55,6 +55,7 @@ def one_point(data, iterations, pop):
 	# one point crossover
 	# mutation is present with prob of 0.1
 
+	plot = []
 	population = gen_pop(data, pop)
 
 	# one point part
@@ -96,12 +97,15 @@ def one_point(data, iterations, pop):
 		chunk2 = population[len(population)//2:]
 		population = chunk1[:len(chunk1)//2] + chunk2[:len(chunk2)//2]
 
-	return population
+		plot += [population[0]['fitness']]
+
+	return population, plot
 
 def two_point(data, iterations, pop):
 	# two point crossover with starting pop of 2
 	# mutation is present with prob of 0.1
 
+	plot = []
 	population = gen_pop(data, pop)
 
 	# one point part
@@ -148,4 +152,6 @@ def two_point(data, iterations, pop):
 		chunk2 = population[len(population)//2:]
 		population = chunk1[:len(chunk1)//2] + chunk2[:len(chunk2)//2]
 
-	return population
+		plot += [population[0]['fitness']]
+
+	return population, plot
