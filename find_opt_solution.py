@@ -1,9 +1,10 @@
 import numpy as np
 from operator import itemgetter
+import copy as cp
 
 def gen_set(size):
 	data = np.full((size, size), False)
-	allowed = np.random.randint(1, 6, size=size)
+	allowed = np.random.randint(1, 4, size=size)
 
 	for index, val in enumerate(allowed):
 		# iterate val times
@@ -40,13 +41,13 @@ def fit_calc(data, solution):
 	fit = 0
 	# index = node, el = list
 	for index, el in enumerate(data):
-		# pos = node, node = val
-		for pos, node in enumerate(el):
+		# node = node, val = bool
+		for node, val in enumerate(el):
 			# symmetry break
-			if index == pos:
+			if index == node:
 				break
 			# count fit conditions
-			if node and solution[index] == solution[pos]:
+			if val == 'True' and solution[index] == solution[node]:
 				fit += 1
 	return fit
 
@@ -66,22 +67,34 @@ def one_point(data, iterations, pop):
 		pair = np.random.permutation(pop)
 		counter = 0
 		while counter < pop:
+			# add children to population
 			rand_pos = np.random.randint(0,len(data[0]))
-			child1, child2 = population[counter], population[counter+1]
-			child1['path'][rand_pos], child2['path'][rand_pos] = child2['path'][rand_pos], child1['path'][rand_pos]
-			child1['fitness'],child2['fitness'] = fit_calc(data, child1['path']),	fit_calc(data, child2['path'])
-			population.append([child1,child2])
+			children = [cp.copy(population[pair[counter]]), cp.copy(population[pair[counter+1]])]
+			children[0]['path'][rand_pos], children[1]['path'][rand_pos] = children[1]['path'][rand_pos], children[0]['path'][rand_pos]
+			for child in children:
+				child['fitness'] = fit_calc(data, child['path'])
+
+			# check for mutation
+			for child in children:
+				mutate = np.random.rand()
+				if mutate <= 0.1:
+					# random values
+					rand_pos = np.random.randint(0,len(data[0]))
+					rand_val = np.random.randint(0,3)
+					while rand_val == child['path'][rand_pos]:
+						rand_val = np.random.randint(0,3)
+
+					child['path'][rand_pos] = rand_val
+					child['fitness'] = fit_calc(data, child['path'])
+
+			population += children
+
 			counter+=2
 		
-		# sort_on = 'fitness'
-		# decorated = [(dict_[sort_on], dict_) for dict_ in population]
-		# decorated.sort()
-		# population = [dict_ for (key, dict_) in decorated]
-
-		# population.sort(key=lambda k: k[1])
-		print(type(population[0]))
 		population = sorted(population, key=itemgetter('fitness'))
-		population = population[:len(population)//2]
+		chunk1 = population[:len(population)//2]
+		chunk2 = population[len(population)//2:]
+		population = chunk1[:len(chunk1)//2] + chunk2[:len(chunk2)//2]
 
 	return population
 
@@ -89,4 +102,50 @@ def two_point(data, iterations, pop):
 	# two point crossover with starting pop of 2
 	# mutation is present with prob of 0.1
 
-	population = gen_pop(data, 2)
+	population = gen_pop(data, pop)
+
+	# one point part
+	for _ in range(iterations):
+		# select pairs
+		# generate children
+		# sort and reduce pop by 2
+
+		# generationg children for each pair
+		pair = np.random.permutation(pop)
+		counter = 0
+		while counter < pop:
+			# add children to population
+			rand_pos = np.random.randint(0,len(data[0]), size=2)
+			rand_pos.sort()
+
+			children = [cp.copy(population[pair[counter]]), cp.copy(population[pair[counter+1]])]
+			while rand_pos[0] != rand_pos[1]:
+				children[0]['path'][rand_pos], children[1]['path'][rand_pos] = children[1]['path'][rand_pos], children[0]['path'][rand_pos]
+				rand_pos[0] += 1
+
+			for child in children:
+				child['fitness'] = fit_calc(data, child['path'])
+
+			# check for mutation
+			for child in children:
+				mutate = np.random.rand()
+				if mutate <= 0.1:
+					# random values
+					rand_pos = np.random.randint(0,len(data[0]))
+					rand_val = np.random.randint(0,3)
+					while rand_val == child['path'][rand_pos]:
+						rand_val = np.random.randint(0,3)
+
+					child['path'][rand_pos] = rand_val
+					child['fitness'] = fit_calc(data, child['path'])
+
+			population += children
+
+			counter+=2
+		
+		population = sorted(population, key=itemgetter('fitness'))
+		chunk1 = population[:len(population)//2]
+		chunk2 = population[len(population)//2:]
+		population = chunk1[:len(chunk1)//2] + chunk2[:len(chunk2)//2]
+
+	return population
