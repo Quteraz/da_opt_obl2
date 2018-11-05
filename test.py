@@ -39,13 +39,13 @@ print('-------------------------------------------------------------------------
 
 print('One Point')
 
-one_point, one_plt = op.one_point(data, 100, 50)
+one_point, one_plt = op.one_point(data, 1000, 50)
 print('Fitness in',data_set,':',one_point[0])
 
 print('-------------------------------------------------------------------------------------')
 print('Two Point')
 
-two_point, two_plt = op.two_point(data, 100, 50)
+two_point, two_plt = op.two_point(data, 1000, 50)
 print('Fitness in',data_set,':',two_point[0])
 
 print('-------------------------------------------------------------------------------------\n')

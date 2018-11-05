@@ -71,6 +71,7 @@ def one_point(data, iterations, pop):
 			# add children to population
 			rand_pos = np.random.randint(0,len(data[0]))
 			children = [cp.copy(population[pair[counter]]), cp.copy(population[pair[counter+1]])]
+			# children = [cp.copy(population[counter]), cp.copy(population[counter+1])]
 			children[0]['path'][rand_pos], children[1]['path'][rand_pos] = children[1]['path'][rand_pos], children[0]['path'][rand_pos]
 			for child in children:
 				child['fitness'] = fit_calc(data, child['path'])
@@ -94,8 +95,9 @@ def one_point(data, iterations, pop):
 		
 		population = sorted(population, key=itemgetter('fitness'))
 		chunk1 = population[:len(population)//2]
-		chunk2 = population[len(population)//2:]
-		population = chunk1[:len(chunk1)//2] + chunk2[:len(chunk2)//2]
+		# chunk2 = population[len(population)//2:]
+		# population = chunk1[:len(chunk1)//2] + chunk2[:len(chunk2)//2]
+		population = chunk1
 
 		plot += [population[0]['fitness']]
 
